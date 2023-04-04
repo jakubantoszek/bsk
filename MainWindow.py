@@ -21,6 +21,9 @@ class MainWindow:
         message_frame = tk.LabelFrame(self.window, text="Send message")
         options = ["ECB", "CBC"]
 
+        entry_label = tk.Label(message_frame, text="Message: ")
+        entry_label.pack()
+
         self.message_entry = tk.Entry(message_frame)
         self.message_entry.pack()
 

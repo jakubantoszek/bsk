@@ -17,7 +17,7 @@ class GenerateKey:
         frame = tk.LabelFrame(self.window, text="Creating public key")
         options = ["RSA1024", "RSA2048"]
 
-        message = tk.LabelFrame(frame, text="Opis ale nie wiem co tu napisac")
+        message = tk.LabelFrame(self.window, text="Opis ale nie wiem co tu napisac")
         message.pack()
         
         self.selected_algorithm = tk.StringVar(frame)
