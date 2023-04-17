@@ -1,10 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
+import rsa
 
 
 class GenerateKey:
     def __init__(self):
+        self.private_key = None
+        self.public_key = None
         self.algorithm_menu = None
         self.selected_algorithm = None
         self.window = Tk()
@@ -32,4 +35,11 @@ class GenerateKey:
         frame.pack(padx=10, pady=10)
 
     def generate_key(self):
+        if self.selected_algorithm.get() == "RSA1024":
+            (public_key, private_key) = rsa.newkeys(1024)
+        else:
+            (public_key, private_key) = rsa.newkeys(2048)
+
+        self.public_key = public_key.save_pkcs1('PEM')
+        self.private_key = private_key.save_pkcs1('PEM')
         self.window.destroy()
