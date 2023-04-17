@@ -10,10 +10,10 @@ class ConfigureConnection:
         self.selected_algorithm = None
         self.window = Tk()
         self.window.title("Configure connection")
-        self.window.geometry('300x225')
+        self.window.geometry('300x200')
 
-        self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
-        self.message.pack()
+        # self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
+        # self.message.pack()
 
         self.generate_key_frame()
 

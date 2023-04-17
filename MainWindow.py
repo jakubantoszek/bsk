@@ -12,7 +12,7 @@ class MainWindow:
         self.window = Tk()
 
         self.window.title("BSK")
-        self.window.geometry('640x480')
+        self.window.geometry('350x350')
 
         self.create_message_frame()
         self.create_file_frame()

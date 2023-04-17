@@ -20,7 +20,7 @@ class Login:
 
     def create_window(self, window_type):
         self.window = tk.Tk()
-        self.window.geometry('600x450')
+        self.window.geometry('250x250')
 
         if window_type == 'Login':
             self.window.title("Login")
@@ -89,7 +89,7 @@ class Login:
                     else:
                         print("Incorrect password")
 
-            self.window.destroy()
+                self.window.destroy()
         elif window_type == 'Register':
             self.window.destroy()
             self.create_window('Login')
@@ -113,6 +113,7 @@ class Login:
                     print("Password are not the same")
 
                 self.window.destroy()
+                self.create_window('Login')
         elif window_type == 'Login':
             self.window.destroy()
             self.create_window('Register')
