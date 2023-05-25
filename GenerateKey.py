@@ -6,8 +6,6 @@ import rsa
 
 class GenerateKey:
     def __init__(self):
-        self.private_key = None
-        self.public_key = None
         self.algorithm_menu = None
         self.selected_algorithm = None
         self.window = Tk()
@@ -40,6 +38,11 @@ class GenerateKey:
         else:
             (public_key, private_key) = rsa.newkeys(2048)
 
-        self.public_key = public_key.save_pkcs1('PEM')
-        self.private_key = private_key.save_pkcs1('PEM')
+        public_key = public_key.save_pkcs1('PEM')
+        private_key = private_key.save_pkcs1('PEM')
         self.window.destroy()
+
+        self.save_keys(public_key, private_key)
+
+    # def save_keys(self, public_key, private_key):
+    #     with open(os.path.join(user_dir, "local_key.txt"), 'r') as file:

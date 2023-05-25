@@ -1,14 +1,18 @@
+import socket
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
 
 
 class MainWindow:
-    def __init__(self):
+    def __init__(self, host, port):
         self.message_entry = None
         self.algorithm_menu = None
         self.selected_algorithm = None
         self.file_label = None
+
+        self.host = host
+        self.port = port
         self.window = Tk()
 
         self.window.title("BSK")
@@ -68,4 +72,10 @@ class MainWindow:
         pass
 
     def send_message(self):
-        pass
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.connect((self.host, self.port))
+            sock.sendall(self.message_entry.get().encode())
+        finally:
+            sock.close()
+

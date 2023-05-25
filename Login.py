@@ -14,6 +14,7 @@ class Login:
         self.username_entry = None
         self.password_label = None
         self.username_label = None
+        self.user_directory = None
 
         self.create_window('Login')
         self.window.mainloop()
@@ -86,10 +87,10 @@ class Login:
                     password = password.replace('\n', '')
                     if hashlib.sha256(self.password_entry.get().encode()).hexdigest() == password:
                         print("Correct password")
+                        self.window.destroy()
                     else:
                         print("Incorrect password")
-
-                self.window.destroy()
+            self.user_directory = user_dir
         elif window_type == 'Register':
             self.window.destroy()
             self.create_window('Login')
@@ -109,11 +110,10 @@ class Login:
                     os.mkdir(user_dir)
                     with open(os.path.join(user_dir, "local_key.txt"), 'w') as file:
                         file.write(password_hash)
+                    self.window.destroy()
+                    self.create_window('Login')
                 else:
-                    print("Password are not the same")
-
-                self.window.destroy()
-                self.create_window('Login')
+                    print("Passwords are not the same")
         elif window_type == 'Login':
             self.window.destroy()
             self.create_window('Register')
