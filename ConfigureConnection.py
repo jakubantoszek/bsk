@@ -6,7 +6,7 @@ from utils import *
 
 
 class ConfigureConnection:
-    def __init__(self, user_type):
+    def __init__(self, user_type, user_directory):
         self.entry = None
         self.algorithm_menu = None
         self.selected_algorithm = None
@@ -16,6 +16,7 @@ class ConfigureConnection:
         self.window.geometry('350x200')
         self.user_type = user_type
         self.user_socket = None
+        self.user_directory = user_directory
 
         # self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
         # self.message.pack()
@@ -46,13 +47,22 @@ class ConfigureConnection:
         if self.user_type == "server":
             self.window.destroy()
             user_socket.bind((self.address, 8080))
-            user_socket.listen()
+            user_socket.listen(1)
 
             client, client_address = user_socket.accept()
             recv_message(self.address, 8080, client)
+
+            # TODO wysyłanie kluca nie działa [WinError 10057]
+            send_public_key(self.user_directory, user_socket)
+            client_pub_key = receive_public_key(user_socket)
+            print(client_pub_key)
         else:
             self.window.destroy()
             user_socket.bind((self.address, 8081))
             user_socket.connect((self.address, 8080))
+
+            send_public_key(self.user_directory, user_socket)
+            server_pub_key = receive_public_key(user_socket)
+            print(server_pub_key)
 
         user_socket.close()

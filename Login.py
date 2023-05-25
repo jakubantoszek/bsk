@@ -6,6 +6,7 @@ path = "H:\\Studia\\Semestr 6\\bsk_users"
 
 class Login:
     def __init__(self):
+        self.password = None
         self.repeat_password_entry = None
         self.repeat_password_label = None
         self.register_button = None
@@ -88,6 +89,7 @@ class Login:
                     if hashlib.sha256(self.password_entry.get().encode()).hexdigest() == password:
                         print("Correct password")
                         self.window.destroy()
+                        self.password = password
                     else:
                         print("Incorrect password")
             self.user_directory = user_dir
