@@ -1,12 +1,22 @@
 import socket
+import threading
+import time
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
 from utils import *
 
 
+def receive_data(client_socket):
+    while True:
+        response = client_socket.recv(1024)
+
+        if response:
+            print('Receiver:', response.decode('utf-8'))
+
+
 class ConfigureConnection:
-    def __init__(self, user_type, user_directory):
+    def __init__(self, user_type, user_directory, public_key):
         self.entry = None
         self.algorithm_menu = None
         self.selected_algorithm = None
@@ -17,11 +27,13 @@ class ConfigureConnection:
         self.user_type = user_type
         self.user_socket = None
         self.user_directory = user_directory
+        self.public_key = public_key
 
         # self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
         # self.message.pack()
 
-        self.generate_key_frame()
+        if self.user_type == 'client':
+            self.generate_key_frame()
 
     def generate_key_frame(self):
         frame = tk.LabelFrame(self.window, text="Configure connection")
@@ -39,30 +51,14 @@ class ConfigureConnection:
 
     def connect(self):
         self.address = self.entry.get()
-        # TODO obsługa błędów jak nie adres zostanie podany
 
-        user_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.user_socket = user_socket
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((self.address, 8080))
 
-        if self.user_type == "server":
-            self.window.destroy()
-            user_socket.bind((self.address, 8080))
-            user_socket.listen(1)
+        client_socket.send(self.public_key)
+        response_key = client_socket.recv(1024)
 
-            client, client_address = user_socket.accept()
-            recv_message(self.address, 8080, client)
+        print("Mój klucz: ", self.public_key)
+        print("Jego klucz: ", response_key)
 
-            # TODO wysyłanie kluca nie działa [WinError 10057]
-            send_public_key(self.user_directory, user_socket)
-            client_pub_key = receive_public_key(user_socket)
-            print(client_pub_key)
-        else:
-            self.window.destroy()
-            user_socket.bind((self.address, 8081))
-            user_socket.connect((self.address, 8080))
-
-            send_public_key(self.user_directory, user_socket)
-            server_pub_key = receive_public_key(user_socket)
-            print(server_pub_key)
-
-        user_socket.close()
+        client_socket.close()

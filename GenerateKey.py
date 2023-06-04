@@ -18,6 +18,7 @@ class GenerateKey:
         self.window = Tk()
         self.window.title("Generate key")
         self.window.geometry('300x225')
+        self.public_key = None
 
         self.generate_key_frame()
 
@@ -49,6 +50,7 @@ class GenerateKey:
         private_key = private_key.save_pkcs1('PEM')
 
         self.window.destroy()
+        self.public_key = public_key
         self.save_keys(public_key, private_key)
 
     def save_keys(self, public_key, private_key):

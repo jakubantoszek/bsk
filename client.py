@@ -9,7 +9,8 @@ if __name__ == '__main__':
     generate_key = GenerateKey(login.user_directory, login.password)
     generate_key.window.mainloop()
 
-    configure_connection = ConfigureConnection("client", login.user_directory)
+    configure_connection = ConfigureConnection("client", login.user_directory,
+                                               generate_key.public_key)
     configure_connection.window.mainloop()
 
     root = MainWindow(configure_connection.address, 8080)
