@@ -28,6 +28,8 @@ class ConfigureConnection:
         self.user_socket = None
         self.user_directory = user_directory
         self.public_key = public_key
+        self.other_client_key = None
+        self.socket = None
 
         # self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
         # self.message.pack()
@@ -51,6 +53,7 @@ class ConfigureConnection:
 
     def connect(self):
         self.address = self.entry.get()
+        self.window.destroy()
 
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((self.address, 8080))
@@ -61,4 +64,5 @@ class ConfigureConnection:
         print("Mój klucz: ", self.public_key)
         print("Jego klucz: ", response_key)
 
-        client_socket.close()
+        self.other_client_key = response_key
+        self.socket = client_socket

@@ -2,14 +2,17 @@ import socket
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
+from utils import encrypt_message
 
 
 class MainWindow:
-    def __init__(self, host, port):
+    def __init__(self, host, port, encryption_key, client_socket):
         self.message_entry = None
         self.algorithm_menu = None
         self.selected_algorithm = None
         self.file_label = None
+        self.encryption_key = encryption_key
+        self.socket = client_socket
 
         self.host = host
         self.port = port
@@ -72,10 +75,20 @@ class MainWindow:
         pass
 
     def send_message(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket = self.socket
         try:
-            sock.connect((self.host, self.port))
-            sock.sendall(self.message_entry.get().encode())
+            encrypted_message = encrypt_message(self.message_entry.get(),
+                                                self.encryption_key,
+                                                self.selected_algorithm.get())
+            client_socket.send(encrypted_message)
+            response = client_socket.recv(1024).decode()
+            print("Odpowiedź serwera:", response)
+
+            # Jeśli wiadomość to 'exit', zakończ połączenie
+            if self.message_entry.get().lower() == 'exit':
+                self.window.destroy()
+                exit(0)
         finally:
-            sock.close()
+            client_socket.close()
+            exit(0)
 
