@@ -1,8 +1,9 @@
 import os.path
 import tkinter as tk
 import hashlib
+from constants import *
 path = "H:\\Studia\\Semestr 6\\bsk_users"
-
+#path = 'C:\\bsk'
 
 class Login:
     def __init__(self):
@@ -16,13 +17,15 @@ class Login:
         self.password_label = None
         self.username_label = None
         self.user_directory = None
+        self.message_label = None
 
         self.create_window('Login')
         self.window.mainloop()
 
     def create_window(self, window_type):
         self.window = tk.Tk()
-        self.window.geometry('250x250')
+        self.window.geometry(WINDOW_SIZE)
+        self.window.configure(bg=BACKGROUND_COLOR_DARKER)
 
         if window_type == 'Login':
             self.window.title("Login")
@@ -32,66 +35,91 @@ class Login:
             self.register_window()
 
     def login_window(self):
-        self.username_label = tk.Label(self.window, text="Username:")
+        login_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
+        login_frame.pack(pady=20)
+
+        title_label = tk.Label(login_frame, text="Login", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1)
+        title_label.pack(pady=10)
+
+        form_frame = tk.Frame(login_frame, bg=BACKGROUND_COLOR, padx=10, pady=10)
+        form_frame.pack(pady=10)
+
+        self.username_label = tk.Label(form_frame, text="Username:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.username_label.pack()
 
-        self.username_entry = tk.Entry(self.window)
+        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT)
         self.username_entry.pack()
 
-        self.password_label = tk.Label(self.window, text="Password:")
+        self.password_label = tk.Label(form_frame, text="Password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.password_label.pack()
 
-        self.password_entry = tk.Entry(self.window, show="*")
+        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
         self.password_entry.pack()
 
-        self.login_button = tk.Button(self.window, text="Login", command=lambda: self.login('Login'))
-        self.login_button.pack()
+        self.login_button = tk.Button(login_frame, text="Login", command=lambda: self.login('Login'), font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1, width=7)
+        self.login_button.pack(pady=10)
 
-        self.register_button = tk.Button(self.window, text="Register", command=lambda: self.register('Login'))
+        self.register_button = tk.Button(login_frame, text="Register", command=lambda: self.register('Login'), font=BUTTON_FONT, bg=BUTTON_COLOR2, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR2)
         self.register_button.pack()
+
+        self.message_label = tk.Label(login_frame, text="", font=LABEL_FONT, fg=ERROR_COLOR, bg=BACKGROUND_COLOR)
+        self.message_label.pack(pady=10)
 
     def register_window(self):
-        self.username_label = tk.Label(self.window, text="Username:")
+
+        register_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
+        register_frame.pack(pady=20)
+
+        title_label = tk.Label(register_frame, text="Register", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1)
+        title_label.pack(pady=10)
+
+        form_frame = tk.Frame(register_frame, bg=BACKGROUND_COLOR, padx=10, pady=10)
+        form_frame.pack(pady=10)
+
+        self.username_label = tk.Label(form_frame, text="Username:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.username_label.pack()
 
-        self.username_entry = tk.Entry(self.window)
+        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT)
         self.username_entry.pack()
 
-        self.password_label = tk.Label(self.window, text="Password:")
+        self.password_label = tk.Label(form_frame, text="Password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.password_label.pack()
 
-        self.password_entry = tk.Entry(self.window, show="*")
+        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
         self.password_entry.pack()
 
-        self.repeat_password_label = tk.Label(self.window, text="Repeat password:")
+        self.repeat_password_label = tk.Label(form_frame, text="Repeat password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.repeat_password_label.pack()
 
-        self.repeat_password_entry = tk.Entry(self.window, show="*")
+        self.repeat_password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
         self.repeat_password_entry.pack()
 
-        self.register_button = tk.Button(self.window, text="Register", command=lambda: self.register('Register'))
-        self.register_button.pack()
+        self.register_button = tk.Button(register_frame, text="Register", command=lambda: self.register('Register'), font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
+        self.register_button.pack(pady=10)
 
-        self.login_button = tk.Button(self.window, text="Login", command=lambda: self.login('Register'))
+        self.login_button = tk.Button(register_frame, text="Login", command=lambda: self.login('Register'), font=BUTTON_FONT, bg=BUTTON_COLOR2, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR2, width=7)
         self.login_button.pack()
+
+        self.message_label = tk.Label(register_frame, text="", font=LABEL_FONT, fg=ERROR_COLOR, bg=BACKGROUND_COLOR)
+        self.message_label.pack(pady=10)
 
     def login(self, window_type):
         if window_type == 'Login':
             user_dir = os.path.join(path, self.username_entry.get())
             if self.username_entry.get().strip() == '' or self.password_entry.get().strip() == '':
-                print("Username or password is empty")
+                self.show_message("Fields can't be empty")
             elif not os.path.exists(user_dir):
-                print("User does not exist")
+                self.show_message("User does not exist")
             else:
                 with open(os.path.join(user_dir, "local_key.txt"), 'r') as file:
                     password = file.read()
                     password = password.replace('\n', '')
                     if hashlib.sha256(self.password_entry.get().encode()).hexdigest() == password:
-                        print("Correct password")
+                        self.show_message("Correct password")
                         self.window.destroy()
                         self.password = password
                     else:
-                        print("Incorrect password")
+                        self.show_message("Incorrect password")
             self.user_directory = user_dir
         elif window_type == 'Register':
             self.window.destroy()
@@ -100,9 +128,9 @@ class Login:
     def register(self, window_type):
         if window_type == 'Register':
             if self.username_entry.get().strip() == '' or self.repeat_password_entry.get().strip() == '' or self.password_entry.get().strip() == '':
-                print("Fields can't be empty")
+                self.show_message("Fields can't be empty")
             elif os.path.exists(os.path.join(path, self.username_entry.get())):
-                print("User exists")
+                self.show_message("User exists")
             else:
                 password_hash = hashlib.sha256(self.password_entry.get().encode()).hexdigest()
                 repeated_password_hash = hashlib.sha256(self.repeat_password_entry.get().encode()).hexdigest()
@@ -115,7 +143,15 @@ class Login:
                     self.window.destroy()
                     self.create_window('Login')
                 else:
-                    print("Passwords are not the same")
+                    self.show_message("Passwords are not the same")
         elif window_type == 'Login':
             self.window.destroy()
             self.create_window('Register')
+
+    def show_message(self, message):
+        if self.message_label:
+            self.message_label.destroy()
+
+        frame = self.window if self.window.title() == "Registration" else self.window.children['!frame']
+        self.message_label = tk.Label(frame, text=message, font=LABEL_FONT_MINI, fg=ERROR_COLOR, bg=BACKGROUND_COLOR)
+        self.message_label.pack(pady=10)
