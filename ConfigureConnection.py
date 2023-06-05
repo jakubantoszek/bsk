@@ -5,25 +5,29 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
 from utils import *
+from constants import *
 
 
-def receive_data(client_socket):
-    while True:
-        response = client_socket.recv(1024)
+class ReceiveDataThread(threading.Thread):
+    def __init__(self, client_socket):
+        threading.Thread.__init__(self)
+        self.client_socket = client_socket
 
-        if response:
-            print('Receiver:', response.decode('utf-8'))
+    def run(self):
+        while True:
+            response = self.client_socket.recv(1024)
 
+            if response:
+                print('Receiver:', response.decode('utf-8'))
 
 class ConfigureConnection:
     def __init__(self, user_type, user_directory, public_key):
         self.entry = None
-        self.algorithm_menu = None
-        self.selected_algorithm = None
         self.address = None
         self.window = Tk()
         self.window.title("Configure connection: " + user_type)
-        self.window.geometry('350x200')
+        self.window.geometry(WINDOW_SIZE)
+        self.window.configure(bg=BACKGROUND_COLOR_DARKER)
         self.user_type = user_type
         self.user_socket = None
         self.user_directory = user_directory
@@ -31,25 +35,26 @@ class ConfigureConnection:
         self.other_client_key = None
         self.socket = None
 
-        # self.message = tk.Label(self.window, text="Opis ale nie wiem co tu napisac")
-        # self.message.pack()
+        self.configure_connection_frame()
 
-        if self.user_type == 'client':
-            self.generate_key_frame()
+    def configure_connection_frame(self):
+        frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
+        frame.pack(pady=20)
 
-    def generate_key_frame(self):
-        frame = tk.LabelFrame(self.window, text="Configure connection")
+        title_label = tk.Label(frame, text="Configure connection", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1)
+        title_label.pack(pady=10)
 
-        entry_label = tk.Label(frame, text="Address: ")
-        entry_label.pack()
+        address_frame = tk.Frame(frame, bg=BACKGROUND_COLOR, padx=10, pady=10)
+        address_frame.pack(pady=20)
 
-        self.entry = tk.Entry(frame)
+        address_label = tk.Label(address_frame, text="Address:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
+        address_label.pack()
+
+        self.entry = tk.Entry(address_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.entry.pack()
 
-        send_button = tk.Button(frame, text='Connect', command=self.connect)
-        send_button.pack()
-
-        frame.pack(padx=10, pady=10)
+        connect_button = tk.Button(frame, text='Connect', command=self.connect, font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
+        connect_button.pack()
 
     def connect(self):
         self.address = self.entry.get()

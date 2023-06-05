@@ -37,7 +37,7 @@ class GenerateKey:
         self.selected_algorithm = tk.StringVar(frame)
         self.selected_algorithm.set(options[0])
 
-        radio_frame = tk.Frame(frame, bg=BACKGROUND_COLOR)
+        radio_frame = tk.Frame(frame, bg=BACKGROUND_COLOR, padx=10, pady=10)
         radio_frame.pack(pady=20)
 
         for option in options:
@@ -49,8 +49,6 @@ class GenerateKey:
 
         send_button = tk.Button(frame, text='Generate key', command=self.generate_key, font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
         send_button.pack()
-
-        frame.pack(padx=10, pady=10)
 
     def update_radio_buttons(self):
         for button in self.radio_buttons:  # Używamy self.radio_buttons

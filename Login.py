@@ -2,8 +2,8 @@ import os.path
 import tkinter as tk
 import hashlib
 from constants import *
-path = "H:\\Studia\\Semestr 6\\bsk_users"
-#path = 'C:\\bsk'
+#path = "H:\\Studia\\Semestr 6\\bsk_users"
+path = 'C:\\bsk'
 
 class Login:
     def __init__(self):
@@ -47,13 +47,13 @@ class Login:
         self.username_label = tk.Label(form_frame, text="Username:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.username_label.pack()
 
-        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT)
+        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.username_entry.pack()
 
         self.password_label = tk.Label(form_frame, text="Password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.password_label.pack()
 
-        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
+        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.password_entry.pack()
 
         self.login_button = tk.Button(login_frame, text="Login", command=lambda: self.login('Login'), font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1, width=7)
@@ -79,19 +79,19 @@ class Login:
         self.username_label = tk.Label(form_frame, text="Username:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.username_label.pack()
 
-        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT)
+        self.username_entry = tk.Entry(form_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.username_entry.pack()
 
         self.password_label = tk.Label(form_frame, text="Password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.password_label.pack()
 
-        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
+        self.password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.password_entry.pack()
 
         self.repeat_password_label = tk.Label(form_frame, text="Repeat password:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
         self.repeat_password_label.pack()
 
-        self.repeat_password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT)
+        self.repeat_password_entry = tk.Entry(form_frame, show="*", font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.repeat_password_entry.pack()
 
         self.register_button = tk.Button(register_frame, text="Register", command=lambda: self.register('Register'), font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
