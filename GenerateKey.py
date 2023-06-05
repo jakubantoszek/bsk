@@ -7,38 +7,57 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-
+from constants import *
 
 class GenerateKey:
     def __init__(self, user_dir, local_key):
         self.user_dir = user_dir
         self.local_key = local_key
-        self.algorithm_menu = None
         self.selected_algorithm = None
         self.window = Tk()
         self.window.title("Generate key")
-        self.window.geometry('300x225')
+        self.window.geometry(WINDOW_SIZE)
+        self.window.configure(bg=BACKGROUND_COLOR_DARKER)
         self.public_key = None
+        self.radio_buttons = []  # Lista radiobuttons
 
         self.generate_key_frame()
 
     def generate_key_frame(self):
-        frame = tk.LabelFrame(self.window, text="Creating public and private key")
+        frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
+        frame.pack(pady=20)
+
+        title_label = tk.Label(frame, text="Keys", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1)
+        title_label.pack(pady=10)
+
+        message = tk.Label(frame, text="Creating public and private key", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, fg=TEXT_COLOR2)
+        message.pack(pady=10)
+
         options = ["RSA1024", "RSA2048"]
-
-        message = tk.LabelFrame(self.window, text="Opis ale nie wiem co tu napisac")
-        message.pack()
-
         self.selected_algorithm = tk.StringVar(frame)
         self.selected_algorithm.set(options[0])
 
-        self.algorithm_menu = tk.OptionMenu(frame, self.selected_algorithm, *options)
-        self.algorithm_menu.pack()
+        radio_frame = tk.Frame(frame, bg=BACKGROUND_COLOR)
+        radio_frame.pack(pady=20)
 
-        send_button = tk.Button(frame, text='Generate key', command=self.generate_key)
+        for option in options:
+            algorithm_button = tk.Radiobutton(radio_frame, text=option, variable=self.selected_algorithm, value=option, font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR, activebackground=BACKGROUND_COLOR, command=self.update_radio_buttons)
+            algorithm_button.pack(anchor=W)
+            self.radio_buttons.append(algorithm_button)  # Dodawanie do listy radiobuttons
+
+        self.update_radio_buttons()  # Inicjalne ustawienie koloru dla opcji
+
+        send_button = tk.Button(frame, text='Generate key', command=self.generate_key, font=BUTTON_FONT, bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
         send_button.pack()
 
         frame.pack(padx=10, pady=10)
+
+    def update_radio_buttons(self):
+        for button in self.radio_buttons:  # Używamy self.radio_buttons
+            if button["text"] == self.selected_algorithm.get():
+                button.configure(fg=TEXT_COLOR1)  # Ustawienie koloru czerwonego dla zaznaczonej opcji
+            else:
+                button.configure(fg=TEXT_COLOR2)  # Ustawienie normalnego koloru dla niezaznaczonych opcji
 
     def generate_key(self):
         if self.selected_algorithm.get() == "RSA1024":
@@ -66,8 +85,7 @@ class GenerateKey:
     def encrypt_private_key(self, key):
         iv = os.urandom(16)
 
-        cipher = Cipher(algorithms.AES256(self.local_key[:32].encode()),
-                        modes.CBC(iv), default_backend())
+        cipher = Cipher(algorithms.AES256(self.local_key[:32].encode()), modes.CBC(iv), default_backend())
         encryptor = cipher.encryptor()
 
         padder = padding.PKCS7(algorithms.AES256.block_size).padder()
