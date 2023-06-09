@@ -2,6 +2,7 @@ import socket
 import threading
 import time
 import tkinter as tk
+
 from tkinter import filedialog
 from tkinter import *
 from utils import *
@@ -66,8 +67,8 @@ class ConfigureConnection:
         client_socket.send(self.public_key)
         response_key = client_socket.recv(1024)
 
-        print("Mój klucz: ", self.public_key)
-        print("Jego klucz: ", response_key)
+        print("My key: ", self.public_key)
+        print("Other key: ", response_key)
 
         self.other_client_key = response_key
         self.socket = client_socket

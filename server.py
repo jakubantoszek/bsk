@@ -6,13 +6,13 @@ def start_server(host, port):
     server_socket.bind((host, port))
     server_socket.listen(2)
 
-    print("Serwer nasłuchuje na {}:{}".format(host, port))
+    print("The server is listening on {}:{}".format(host, port))
 
     client_sockets = []
     while len(client_sockets) < 2:
         connection, address = server_socket.accept()
         client_sockets.append(connection)
-        print("Połączenie nawiązane z:", address)
+        print("Connected with: ", address)
 
     while True:
         message = client_sockets[0].recv(1024)

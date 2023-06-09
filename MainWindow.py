@@ -1,10 +1,11 @@
+import os
 import socket
 import tkinter as tk
+
 from tkinter import filedialog
 from tkinter import *
 from utils import encrypt_message
 from constants import *
-import os
 
 
 ALGORITHM_OPTIONS = ["ECB", "CBC"]
@@ -78,6 +79,7 @@ class MainWindow:
 
         file_frame.pack(padx=10, fill="x")
 
+
     def update_radio_buttons(self):
         for button in self.radio_buttons:
             if button["text"] == self.selected_algorithm.get():
@@ -85,14 +87,17 @@ class MainWindow:
             else:
                 button.configure(fg=TEXT_COLOR2)
 
+
     def upload_file(self):
         path = filedialog.askopenfilename()
         if path:
             file_name = os.path.basename(path)
             self.file_label.configure(text=file_name)
 
+
     def send_file(self):
         pass
+
 
     def send_message(self):
         client_socket = self.socket
@@ -101,7 +106,7 @@ class MainWindow:
             # encode the message as bytes before sending
             client_socket.send(encrypted_message.encode())
             response = client_socket.recv(1024).decode()
-            print("Odpowiedź serwera:", response)
+            print("Server response: ", response)
 
             if self.message_entry.get().lower() == "exit":
                 self.window.destroy()

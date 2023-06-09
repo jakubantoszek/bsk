@@ -1,9 +1,11 @@
 import os.path
-import tkinter as tk
 import hashlib
+import tkinter as tk
+
 from constants import *
 #path = "H:\\Studia\\Semestr 6\\bsk_users"
 path = 'C:\\bsk'
+
 
 class Login:
     def __init__(self):
@@ -22,6 +24,7 @@ class Login:
         self.create_window('Login')
         self.window.mainloop()
 
+
     def create_window(self, window_type):
         self.window = tk.Tk()
         self.window.geometry(WINDOW_SIZE)
@@ -33,6 +36,7 @@ class Login:
         elif window_type == 'Register':
             self.window.title("Register")
             self.register_window()
+
 
     def login_window(self):
         login_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
@@ -64,6 +68,7 @@ class Login:
 
         self.message_label = tk.Label(login_frame, text="", font=LABEL_FONT, fg=ERROR_COLOR, bg=BACKGROUND_COLOR)
         self.message_label.pack(pady=10)
+
 
     def register_window(self):
 
@@ -103,6 +108,7 @@ class Login:
         self.message_label = tk.Label(register_frame, text="", font=LABEL_FONT, fg=ERROR_COLOR, bg=BACKGROUND_COLOR)
         self.message_label.pack(pady=10)
 
+
     def login(self, window_type):
         if window_type == 'Login':
             user_dir = os.path.join(path, self.username_entry.get())
@@ -124,6 +130,7 @@ class Login:
         elif window_type == 'Register':
             self.window.destroy()
             self.create_window('Login')
+
 
     def register(self, window_type):
         if window_type == 'Register':
@@ -147,6 +154,7 @@ class Login:
         elif window_type == 'Login':
             self.window.destroy()
             self.create_window('Register')
+
 
     def show_message(self, message):
         if self.message_label:
