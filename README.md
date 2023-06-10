@@ -65,6 +65,11 @@ The Secure Chat Application consists of the following files:
 
 The Secure Chat Application uses the Advanced Encryption Standard (AES) algorithm for encryption. It supports two modes of operation: Electronic Codebook (ECB) and Cipher Block Chaining (CBC). Users can choose the encryption mode when sending messages or files.
 
+## Documentation
+
+Link to project report on Google Drive:
+- `https://docs.google.com/document/d/13h5VfgW6aMQsHDP0VQc0_pA3CQdiwPC8FIokmxQ0XK4/edit?usp=sharing`
+
 ## Contributing
 
 Contributions to the Secure Chat Application are welcome! If you find any issues or have suggestions for improvements, please feel free to contact us on Github :)
