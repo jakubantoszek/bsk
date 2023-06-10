@@ -3,6 +3,13 @@
 The Secure Chat Application is a client-server chat application that provides secure communication using encryption algorithms. It allows users to exchange encrypted messages and send encrypted files over a network.
 
 Implementation of the project as part of the subject of studies: Security of Computer Systems.
+
+## Authors
+
+- [@jakubantoszek](https://github.com/jakubantoszek)
+
+- [@AgnieszkaDelmaczynska](https://github.com/AgnieszkaDelmaczynska)
+
 ## Features
 
 - Secure communication using encryption algorithms (`AES`, `RSA`)
