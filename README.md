@@ -69,7 +69,7 @@ The Secure Chat Application uses the Advanced Encryption Standard (AES) algorith
 ## Documentation
 
 Link to project report on Google Drive:
-- `https://docs.google.com/document/d/13h5VfgW6aMQsHDP0VQc0_pA3CQdiwPC8FIokmxQ0XK4/edit?usp=sharing`
+- https://docs.google.com/document/d/13h5VfgW6aMQsHDP0VQc0_pA3CQdiwPC8FIokmxQ0XK4/edit?usp=sharing
 
 ## Contributing
 
