@@ -60,6 +60,7 @@ The Secure Chat Application consists of the following files:
 - `ConfigureConnection.py`: Allows users to configure the server host and port.
 - `Login.py`: Handles user authentication and account creation.
 - `MainWindow.py`: Displays the main application window for sending messages and files securely.
+- `constants.py`: All the of the variables describing colors, sizes and fonts have been defined in this file.
 
 ## Encryption
 
