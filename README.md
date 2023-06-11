@@ -30,18 +30,29 @@ Before running the Secure Chat Application, make sure you have the following pre
 1. Clone the repository to your local machine using the following command:
     `git clone https://github.com/jakubantoszek/bsk.git`
 2. Install the required dependencies. Run the following commands:
-    `pip install tkinter`
-    `pip install cryptography`
+
+    ```shell
+    pip install tkinter
+    ```
+    ```shell
+    pip install cryptography
+    ````
 
 ## Getting Started
 To get started with the Secure Chat Application, follow these steps:
 1. Start the server by running the following command:
-    `python server.py` or just run the file `server.py`
+    ```shell
+    python server.py
+    ```
+    or just run the file `server.py`
     
     The server will start listening for incoming connections on the specified host and port.
 ####
 2. Start a client instance by running the following command:
-    `python client.py` or just run the file `client.py`
+    ```shell
+    python client.py
+    ```
+    or just run the file `client.py`
     
     The client application will launch, displaying the main window where you can enter messages or send files securely.
 
@@ -69,8 +80,14 @@ The Secure Chat Application uses the Advanced Encryption Standard (AES) algorith
 ## Documentation
 
 Link to project report on Google Drive:
-- https://docs.google.com/document/d/13h5VfgW6aMQsHDP0VQc0_pA3CQdiwPC8FIokmxQ0XK4/edit?usp=sharing
+```shell
+https://docs.google.com/document/d/13h5VfgW6aMQsHDP0VQc0_pA3CQdiwPC8FIokmxQ0XK4/edit?usp=sharing
+```
 
 ## Contributing
 
 Contributions to the Secure Chat Application are welcome! If you find any issues or have suggestions for improvements, please feel free to contact us on Github :)
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
