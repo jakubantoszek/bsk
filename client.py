@@ -2,7 +2,7 @@ from MainWindow import MainWindow
 from GenerateKey import GenerateKey
 from ConfigureConnection import ConfigureConnection
 from Login import Login
-from utils import get_session_key
+from utils import get_session_key, session_keys_exchange
 
 
 if __name__ == '__main__':
@@ -15,9 +15,11 @@ if __name__ == '__main__':
     configure_connection.window.mainloop()
 
     session_key = get_session_key(configure_connection.other_client_key)
+    session_key_2 = session_keys_exchange(configure_connection.socket,
+                                          session_key)
 
     root = MainWindow(configure_connection.address, 8080, session_key,
-                      configure_connection.socket)
+                      session_key_2, configure_connection.socket)
     root.window.mainloop()
 
     configure_connection.user_socket.close()
