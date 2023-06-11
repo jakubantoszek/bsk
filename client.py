@@ -19,7 +19,8 @@ if __name__ == '__main__':
                                           session_key)
 
     root = MainWindow(configure_connection.address, 8080, session_key,
-                      session_key_2, configure_connection.socket)
+                      session_key_2, configure_connection.socket,
+                      login.user_directory)
     root.window.mainloop()
 
     configure_connection.user_socket.close()

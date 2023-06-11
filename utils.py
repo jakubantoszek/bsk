@@ -84,7 +84,7 @@ def pad_message(message, block_size, mode):
 def encrypt_message(message, encryption_key, mode):
     # Pad the message to a multiple of 16 bytes
     padder = padding.PKCS7(128).padder()
-    padded_message = padder.update(message.encode()) + padder.finalize()
+    padded_message = padder.update(message) + padder.finalize()
 
     encryption_key = encryption_key[:32]
 
@@ -118,7 +118,7 @@ def decrypt_message(encrypted_message, decryption_key, mode):
     unpadded_message = unpadder.update(decrypted_message) + unpadder.finalize()
 
     # Return the decrypted message as a string
-    return unpadded_message.decode()
+    return unpadded_message
 
 
 def public_key_to_bytes(public_key):
