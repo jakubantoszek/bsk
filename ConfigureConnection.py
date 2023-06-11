@@ -64,11 +64,11 @@ class ConfigureConnection:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((self.address, 8080))
 
-        client_socket.send(self.public_key)
-        response_key = client_socket.recv(1024)
+        client_socket.send(public_key_to_bytes(self.public_key))
+        response_key = client_socket.recv(2048)
 
         print("My key: ", self.public_key)
         print("Other key: ", response_key)
 
-        self.other_client_key = response_key
+        self.other_client_key = bytes_to_public_key(response_key)
         self.socket = client_socket

@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding as asymmetric_pad
 
 
 def recv_message(host, port, conn):
@@ -23,6 +24,8 @@ def get_key_from_file(directory):
         public_key = serialization.load_pem_public_key(
             public_key_file.read(), None
         )
+
+    print(type(public_key))
 
     return public_key
 
@@ -46,23 +49,21 @@ def receive_public_key(user_socket):
     return public_key
 
 
-def encrypt_session_key(session_key, encoding_key):
-    iv = os.urandom(16)
-
-    cipher = Cipher(algorithms.AES256(encoding_key[:32]),
-                    modes.CBC(iv), default_backend())
-    encryptor = cipher.encryptor()
-
-    padder = padding.PKCS7(algorithms.AES256.block_size).padder()
-    padded_private_key = padder.update(session_key) + padder.finalize()
-    encrypted_private_key = encryptor.update(padded_private_key) + encryptor.finalize()
-
-    return iv + encrypted_private_key
+def encrypt_session_key(encoding_key, session_key):
+    encrypted_session_key = encoding_key.encrypt(
+        session_key,
+        asymmetric_pad.OAEP(
+            mgf=asymmetric_pad.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return encrypted_session_key
 
 
 def get_session_key(encoding_key):
-    session_key = secrets.token_bytes(16)
-    return encrypt_session_key(session_key, encoding_key)
+    session_key = os.urandom(32)
+    return encrypt_session_key(encoding_key, session_key)
 
 
 def pad_message(message, block_size, mode):
@@ -82,22 +83,22 @@ def pad_message(message, block_size, mode):
 
 def encrypt_message(message, encryption_key, mode):
     if mode == 'ECB':
-        block_size = algorithms.AES.block_size // 8
+        padder = padding.PKCS7(128).padder()
+        padded_message = padder.update(message.encode()) + padder.finalize()
 
-        # Pad the message to a multiple of the block size
-        padded_message = pad_message(message, block_size, 'ECB')
+        encryption_key = encryption_key[:32]
 
-        # Create an AES cipher with ECB mode
-        cipher = Cipher(algorithms.AES(encryption_key), modes.ECB(),
-                        backend=default_backend())
+        # Create an AES cipher object with ECB mode
+        cipher = Cipher(algorithms.AES(encryption_key), modes.ECB(), backend=default_backend())
 
         # Create an encryptor object
         encryptor = cipher.encryptor()
 
         # Encrypt the padded message
-        ciphertext = encryptor.update(padded_message) + encryptor.finalize()
+        encrypted_message = encryptor.update(padded_message) + encryptor.finalize()
 
-        return ciphertext
+        # Return the encrypted message as bytes
+        return encrypted_message
     elif mode == 'CBC':
         iv = os.urandom(16)
         block_size = algorithms.AES.block_size // 8
@@ -110,3 +111,19 @@ def encrypt_message(message, encryption_key, mode):
 
         ciphertext = encryptor.update(padded_message) + encryptor.finalize()
         return ciphertext
+
+
+def public_key_to_bytes(public_key):
+    public_key_bytes = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    return public_key_bytes
+
+
+def bytes_to_public_key(public_key_bytes):
+    public_key = serialization.load_pem_public_key(
+        public_key_bytes,
+        backend=default_backend()
+    )
+    return public_key

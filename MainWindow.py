@@ -101,18 +101,11 @@ class MainWindow:
 
     def send_message(self):
         client_socket = self.socket
-        try:
-            encrypted_message = encrypt_message(self.message_entry.get(), self.encryption_key, self.selected_algorithm.get())
-            # encode the message as bytes before sending
-            client_socket.send(encrypted_message.encode())
-            response = client_socket.recv(1024).decode()
-            print("Server response: ", response)
+        encrypted_message = encrypt_message(self.message_entry.get(), self.encryption_key, self.selected_algorithm.get())
+        client_socket.send(encrypted_message)
 
-            if self.message_entry.get().lower() == "exit":
-                self.window.destroy()
-                exit(0)
-        finally:
-            client_socket.close()
+        if self.message_entry.get().lower() == "exit":
+            self.window.destroy()
             exit(0)
 
 # host = '127.0.0.1'  # Adres IP serwera

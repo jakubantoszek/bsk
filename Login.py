@@ -3,8 +3,8 @@ import hashlib
 import tkinter as tk
 
 from constants import *
-#path = "H:\\Studia\\Semestr 6\\bsk_users"
-path = 'C:\\bsk'
+path = "H:\\Studia\\Semestr 6\\bsk_users"
+#path = 'C:\\bsk'
 
 
 class Login:

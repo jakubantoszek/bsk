@@ -15,10 +15,12 @@ def start_server(host, port):
         print("Connected with: ", address)
 
     while True:
-        message = client_sockets[0].recv(1024)
+        message = client_sockets[0].recv(2048)
+        print(message)
         client_sockets[1].send(message)
 
-        message = client_sockets[1].recv(1024)
+        message = client_sockets[1].recv(2048)
+        print(message)
         client_sockets[0].send(message)
 
     for client_socket in client_sockets:
