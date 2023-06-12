@@ -1,7 +1,7 @@
 import os
 import pickle
-import socket
 import tkinter as tk
+import socket
 
 from tkinter import filedialog
 from tkinter import *
@@ -13,9 +13,8 @@ ALGORITHM_OPTIONS = ["ECB", "CBC"]
 
 
 class MainWindow:
-    def __init__(self, host, port, encryption_key, decryption_key, client_socket, user_dir):
+    def __init__(self, encryption_key, decryption_key, client_socket, user_dir):
         self.message_entry = None
-        self.algorithm_menu = None
         self.selected_algorithm = None
         self.file_label = None
         self.encryption_key = encryption_key
@@ -24,8 +23,6 @@ class MainWindow:
         self.user_dir = user_dir
         self.chosen_file = None
 
-        self.host = host
-        self.port = port
         self.window = Tk()
 
         self.window.title("Main Window: " + self.user_dir[-1])
@@ -107,34 +104,6 @@ class MainWindow:
             file_name = os.path.basename(path)
             self.file_label.configure(text=file_name)
 
-    def send_file(self):
-        if self.chosen_file is not None:
-            with open(self.chosen_file, 'rb') as file:
-                content = file.read()
-                client_socket = self.socket
-
-                self.encryption_key = self.encryption_key[:32]
-                self.decryption_key = self.decryption_key[:32]
-                file_name = os.path.basename(self.chosen_file)
-
-                data = {
-                    'Type': "File",
-                    'Content': content,
-                    'Param': file_name
-                }
-                bytes_data = pickle.dumps(data)
-
-                encrypted_message = encrypt_data(bytes_data, self.encryption_key,
-                                                    self.selected_algorithm.get(), None)
-                client_socket.send(encrypted_message)
-
-                response = client_socket.recv(2048)
-                response_message = decrypt_data(response, self.decryption_key)
-
-                received_data = pickle.loads(response_message)
-                with open(os.path.join(self.user_dir, received_data['Param']), 'wb') as received_file:
-                    received_file.write(received_data['Content'])
-
     def send(self, message_type):
         client_socket = self.socket
         self.encryption_key = self.encryption_key[:32]
@@ -188,13 +157,3 @@ class MainWindow:
 
             with open(new_file_path, 'wb') as received_file:
                 received_file.write(response_content)
-
-# host = '127.0.0.1'  # Adres IP serwera
-# port = 8080  # Port serwera
-# encryption_key = 'myencryptionkey'  # Klucz szyfrowania
-#
-# client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# client_socket.connect((host, port))
-#
-# app = MainWindow(host, port, encryption_key, client_socket)
-# app.window.mainloop()

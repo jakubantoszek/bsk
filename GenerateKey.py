@@ -1,15 +1,14 @@
 import os
-import rsa
 import tkinter as tk
-
-from utils import get_key_from_file
-from tkinter import filedialog
 from tkinter import *
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+
+import rsa
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
 from constants import *
+from utils import get_key_from_file
 
 
 class GenerateKey:
