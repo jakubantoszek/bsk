@@ -17,7 +17,7 @@ class MainWindow:
         # window settings
         self.window = Tk()
         self.window.title("Main Window: " + user_dir[-1])
-        self.window.geometry(WINDOW_SIZE)
+        self.window.geometry(WINDOW_DOUBLE_SIZE)
         self.window.configure(bg=BACKGROUND_COLOR_DARKER)
         self.window.option_add("*Font", LABEL_FONT)
 
@@ -38,13 +38,16 @@ class MainWindow:
 
     def create_main_frame(self):
         main_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=10)
-        main_frame.pack(pady=20)
+        main_frame.pack(pady=20, expand=True)
 
-        title_label = tk.Label(main_frame, text="Main Window", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1,
-                               pady=5)
-        title_label.pack(pady=10)
+        title_label = tk.Label(main_frame, text="Main Window", font=TITLE_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1)
+        title_label.pack()
 
-        message_frame = tk.LabelFrame(main_frame, text="Send message", font=LABEL_FONT, bg=BACKGROUND_COLOR,
+        # Left Frame - Message and File
+        left_frame = tk.Frame(main_frame, bg=BACKGROUND_COLOR)
+        left_frame.pack(side="left", padx=10, pady=10)
+
+        message_frame = tk.LabelFrame(left_frame, text="Send message", font=LABEL_FONT, bg=BACKGROUND_COLOR,
                                       fg=TEXT_COLOR1, padx=10, pady=5)
         message_frame.pack()
 
@@ -55,28 +58,13 @@ class MainWindow:
         self.message_entry = tk.Entry(message_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR)
         self.message_entry.pack()
 
-        options = ALGORITHM_OPTIONS
-        self.selected_algorithm = tk.StringVar(message_frame)
-        self.selected_algorithm.set(options[0])
-
-        radio_frame = tk.Frame(message_frame, bg=BACKGROUND_COLOR, padx=10, pady=5)
-        radio_frame.pack()
-
-        for option in options:
-            algorithm_radio = tk.Radiobutton(radio_frame, text=option, variable=self.selected_algorithm, value=option,
-                                             font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR,
-                                             activebackground=BACKGROUND_COLOR, command=self.update_radio_buttons)
-            algorithm_radio.pack(anchor=W)
-            self.radio_buttons.append(algorithm_radio)
-        self.update_radio_buttons()
-
         send_button = tk.Button(message_frame, text="Send", command=partial(self.send, "Message"), font=BUTTON_FONT,
                                 bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
-        send_button.pack()
+        send_button.pack(pady=5)
 
         message_frame.pack(padx=10, pady=10)
 
-        file_frame = tk.LabelFrame(main_frame, text="Send file", font=LABEL_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1,
+        file_frame = tk.LabelFrame(left_frame, text="Send file", font=LABEL_FONT, bg=BACKGROUND_COLOR, fg=TEXT_COLOR1,
                                    padx=10)
 
         upload_button = tk.Button(file_frame, text="Choose file", command=self.upload_file, font=BUTTON_FONT,
@@ -92,6 +80,39 @@ class MainWindow:
         send_button.pack(pady=5)
 
         file_frame.pack(padx=10, fill="x")
+
+
+        options = ALGORITHM_OPTIONS
+        self.selected_algorithm = tk.StringVar(left_frame)
+        self.selected_algorithm.set(options[0])
+
+        radio_frame = tk.Frame(left_frame, bg=BACKGROUND_COLOR, padx=10, pady=5)
+        radio_frame.pack(anchor="center", pady=5)
+
+        radio_label = tk.Label(radio_frame, text="Choose encryption mode:", font=LABEL_FONT, bg=BACKGROUND_COLOR,
+                                      fg=TEXT_COLOR1)
+        radio_label.pack()
+
+        for option in options:
+            algorithm_radio = tk.Radiobutton(radio_frame, text=option, variable=self.selected_algorithm, value=option,
+                                             font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR,
+                                             activebackground=BACKGROUND_COLOR, command=self.update_radio_buttons)
+            algorithm_radio.pack(anchor="center")
+            self.radio_buttons.append(algorithm_radio)
+        self.update_radio_buttons()
+
+
+        # Right Frame - Received Messages
+        right_frame = tk.Frame(main_frame, bg=BACKGROUND_COLOR)
+        right_frame.pack(side="right", padx=10, pady=10)
+
+        received_messages_label = tk.Label(right_frame, text="Received messages:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR,
+                                           fg=TEXT_COLOR2, pady=5)
+        received_messages_label.pack(pady=10)
+
+        self.received_messages_text = tk.Text(right_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR,
+                                              height=32, width=20)
+        self.received_messages_text.pack()
 
     def update_radio_buttons(self):
         for button in self.radio_buttons:
@@ -147,13 +168,17 @@ class MainWindow:
                                         response_data['Mode'])
 
         if response_data['Type'] == "Message":
-            print("Message received: ", response_content.decode())
+            received_message = "Message received: " + response_content.decode()
+            print(received_message)
+            self.received_messages_text.insert(tk.END, received_message + "\n")
 
             if self.message_entry.get().lower() == "exit":
                 self.window.destroy()
                 exit(0)
         else:
-            print("File received: " + response_data['Filename'])
+            received_file = "File received: " + response_data['Filename']
+            print(received_file)
+            self.received_messages_text.insert(tk.END, received_file + "\n")
             new_file_path = os.path.join(self.user_dir, response_data['Filename'])
 
             with open(new_file_path, 'wb') as received_file:

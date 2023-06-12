@@ -1,5 +1,6 @@
 # Window geometry
 WINDOW_SIZE = '320x450'
+WINDOW_DOUBLE_SIZE = '550x480'
 
 # Colors
 BACKGROUND_COLOR = '#E6F2E8'
