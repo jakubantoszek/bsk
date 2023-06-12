@@ -26,4 +26,4 @@ if __name__ == '__main__':
     root.window.mainloop()
 
     # Finish the connection to the server
-    configure_connection.user_socket.close()
+    configure_connection.socket.close()

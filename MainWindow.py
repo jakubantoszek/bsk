@@ -1,5 +1,6 @@
 import os
 import pickle
+import threading
 import tkinter as tk
 import socket
 
@@ -33,6 +34,9 @@ class MainWindow:
         self.decryption_key = decryption_key[:32]
         self.socket = client_socket
         self.user_dir = user_dir
+
+        receive_thread = threading.Thread(target=self.recv)
+        receive_thread.start()
 
         self.create_main_frame()
 
@@ -161,25 +165,32 @@ class MainWindow:
                     bytes_data = pickle.dumps(data)
                     client_socket.send(bytes_data)
 
-        response = client_socket.recv(2048)
-        response_data = pickle.loads(response)
-        response_content = decrypt_data(response_data['Content'],
-                                        self.decryption_key,
-                                        response_data['Mode'])
+    def recv(self):  # send file or message with additional parameters
+        client_socket = self.socket
 
-        if response_data['Type'] == "Message":
-            received_message = "Message received: " + response_content.decode()
-            print(received_message)
-            self.received_messages_text.insert(tk.END, received_message + "\n")
+        while True:
+            received = client_socket.recv(2048)
+            received_data = pickle.loads(received)
+            received_content = decrypt_data(received_data['Content'],
+                                            self.decryption_key,
+                                            received_data['Mode'])
 
-            if self.message_entry.get().lower() == "exit":
-                self.window.destroy()
-                exit(0)
-        else:
-            received_file = "File received: " + response_data['Filename']
-            print(received_file)
-            self.received_messages_text.insert(tk.END, received_file + "\n")
-            new_file_path = os.path.join(self.user_dir, response_data['Filename'])
+            if not received:
+                break
 
-            with open(new_file_path, 'wb') as received_file:
-                received_file.write(response_content)
+            if received_data['Type'] == "Message":
+                received_message = "Message: " + received_content.decode()
+                print(received_message)
+                self.received_messages_text.insert(tk.END, received_message + "\n")
+
+                if self.message_entry.get().lower() == "exit":
+                    self.window.destroy()
+                    exit(0)
+            else:
+                received_file = "File: " + received_data['Filename']
+                print(received_file)
+                self.received_messages_text.insert(tk.END, received_file + "\n")
+                new_file_path = os.path.join(self.user_dir, received_data['Filename'])
+
+                with open(new_file_path, 'wb') as received_file:
+                    received_file.write(received_content)
