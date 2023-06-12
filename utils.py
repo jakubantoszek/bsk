@@ -81,44 +81,55 @@ def pad_message(message, block_size, mode):
         return padded_message
 
 
-def encrypt_message(message, encryption_key, mode):
-    # Pad the message to a multiple of 16 bytes
-    padder = padding.PKCS7(128).padder()
-    padded_message = padder.update(message) + padder.finalize()
+def encrypt_data(data, encryption_key, mode):
+    if mode == 'ECB':
+        padder = padding.PKCS7(128).padder()
+        padded_message = padder.update(data) + padder.finalize()
 
-    encryption_key = encryption_key[:32]
+        cipher = Cipher(algorithms.AES(encryption_key), modes.ECB(), backend=default_backend())
+        encryptor = cipher.encryptor()
+        encrypted_message = encryptor.update(padded_message) + encryptor.finalize()
 
-    # Create an AES cipher object with ECB mode
-    cipher = Cipher(algorithms.AES(encryption_key), modes.ECB(), backend=default_backend())
+        return encrypted_message
+    elif mode == 'CBC':
+        iv = os.urandom(16)
+        cipher = Cipher(algorithms.AES(encryption_key), modes.CBC(iv), backend=default_backend())
 
-    # Create an encryptor object
-    encryptor = cipher.encryptor()
+        padder = padding.PKCS7(128).padder()
+        padded_plaintext = padder.update(data) + padder.finalize()
 
-    # Encrypt the padded message
-    encrypted_message = encryptor.update(padded_message) + encryptor.finalize()
+        # Encrypt the padded plaintext
+        encryptor = cipher.encryptor()
+        ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
 
-    # Return the encrypted message as bytes
-    return encrypted_message
+        return iv + ciphertext
+
+    return None
 
 
-def decrypt_message(encrypted_message, decryption_key, mode):
-    decryption_key = decryption_key[:32]
+def decrypt_data(encrypted_data, decryption_key, mode):
+    if mode == 'ECB':
+        cipher = Cipher(algorithms.AES(decryption_key), modes.ECB(), backend=default_backend())
+        decryptor = cipher.decryptor()
+        padded_data = decryptor.update(encrypted_data) + decryptor.finalize()
 
-    # Create an AES cipher object with ECB mode
-    cipher = Cipher(algorithms.AES(decryption_key), modes.ECB(), backend=default_backend())
+        unpadder = padding.PKCS7(128).unpadder()
+        data = unpadder.update(padded_data) + unpadder.finalize()
 
-    # Create a decryptor object
-    decryptor = cipher.decryptor()
+        return data
+    elif mode == 'CBC':
+        iv = encrypted_data[:16]  # 16 bytes for AES-128
 
-    # Decrypt the message
-    decrypted_message = decryptor.update(encrypted_message) + decryptor.finalize()
+        cipher = Cipher(algorithms.AES(decryption_key), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        padded_data = decryptor.update(encrypted_data[16:]) + decryptor.finalize()
 
-    # Remove PKCS7 padding from the decrypted message
-    unpadder = padding.PKCS7(128).unpadder()
-    unpadded_message = unpadder.update(decrypted_message) + unpadder.finalize()
+        unpadder = padding.PKCS7(128).unpadder()
+        data = unpadder.update(padded_data) + unpadder.finalize()
 
-    # Return the decrypted message as a string
-    return unpadded_message
+        return data
+
+    return None
 
 
 def public_key_to_bytes(public_key):

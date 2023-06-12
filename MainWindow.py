@@ -5,8 +5,9 @@ import tkinter as tk
 
 from tkinter import filedialog
 from tkinter import *
-from utils import encrypt_message, decrypt_message
+from utils import encrypt_data, decrypt_data
 from constants import *
+from functools import partial
 
 ALGORITHM_OPTIONS = ["ECB", "CBC"]
 
@@ -69,7 +70,7 @@ class MainWindow:
             self.radio_buttons.append(algorithm_radio)
         self.update_radio_buttons()
 
-        send_button = tk.Button(message_frame, text="Send", command=self.send_message, font=BUTTON_FONT,
+        send_button = tk.Button(message_frame, text="Send", command=partial(self.send, "Message"), font=BUTTON_FONT,
                                 bg=BUTTON_COLOR1, fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
         send_button.pack()
 
@@ -86,7 +87,7 @@ class MainWindow:
                                    fg=TEXT_COLOR1, wraplength=190)
         self.file_label.pack()
 
-        send_button = tk.Button(file_frame, text="Send", command=self.send_file, font=BUTTON_FONT, bg=BUTTON_COLOR1,
+        send_button = tk.Button(file_frame, text="Send", command=partial(self.send, "File"), font=BUTTON_FONT, bg=BUTTON_COLOR1,
                                 fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
         send_button.pack(pady=5)
 
@@ -123,41 +124,70 @@ class MainWindow:
                 }
                 bytes_data = pickle.dumps(data)
 
-                encrypted_message = encrypt_message(bytes_data, self.encryption_key,
-                                                    self.selected_algorithm.get())
+                encrypted_message = encrypt_data(bytes_data, self.encryption_key,
+                                                    self.selected_algorithm.get(), None)
                 client_socket.send(encrypted_message)
 
                 response = client_socket.recv(2048)
-                response_message = decrypt_message(response, self.decryption_key, self.selected_algorithm.get())
+                response_message = decrypt_data(response, self.decryption_key)
 
                 received_data = pickle.loads(response_message)
                 with open(os.path.join(self.user_dir, received_data['Param']), 'wb') as received_file:
                     received_file.write(received_data['Content'])
 
-    def send_message(self):
+    def send(self, message_type):
         client_socket = self.socket
         self.encryption_key = self.encryption_key[:32]
         self.decryption_key = self.decryption_key[:32]
 
-        data = {
-            'Type': "File",
-            'Content': self.message_entry.get().encode(),
-            'Mode': self.selected_algorithm.get()
-        }
-        bytes_data = pickle.dumps(data)
+        if message_type == "Message":
+            encrypted_message = encrypt_data(self.message_entry.get().encode(),
+                                             self.encryption_key,
+                                             self.selected_algorithm.get())
 
-        encrypted_message = encrypt_message(bytes_data, self.encryption_key,
-                                            self.selected_algorithm.get())
-        client_socket.send(encrypted_message)
+            data = {
+                'Type': "Message",
+                'Mode': self.selected_algorithm.get(),
+                'Content': encrypted_message
+            }
+            bytes_data = pickle.dumps(data)
+            client_socket.send(bytes_data)
+        else:
+            if self.chosen_file is not None:
+                with open(self.chosen_file, 'rb') as file:
+                    content = file.read()
+                    encrypted_content = encrypt_data(content,
+                                                     self.encryption_key,
+                                                     self.selected_algorithm.get())
+                    file_name = os.path.basename(self.chosen_file)
+
+                    data = {
+                        'Type': "File",
+                        'Mode': self.selected_algorithm.get(),
+                        'Content': encrypted_content,
+                        'Filename': file_name
+                    }
+                    bytes_data = pickle.dumps(data)
+                    client_socket.send(bytes_data)
 
         response = client_socket.recv(2048)
-        response_message = decrypt_message(response, self.decryption_key, self.selected_algorithm.get()).decode()
+        response_data = pickle.loads(response)
+        response_content = decrypt_data(response_data['Content'],
+                                        self.decryption_key,
+                                        response_data['Mode'])
 
-        print("Server response: ", response_message)
+        if response_data['Type'] == "Message":
+            print("Message received: ", response_content.decode())
 
-        if self.message_entry.get().lower() == "exit":
-            self.window.destroy()
-            exit(0)
+            if self.message_entry.get().lower() == "exit":
+                self.window.destroy()
+                exit(0)
+        else:
+            print("File received: " + response_data['Filename'])
+            new_file_path = os.path.join(self.user_dir, response_data['Filename'])
+
+            with open(new_file_path, 'wb') as received_file:
+                received_file.write(response_content)
 
 # host = '127.0.0.1'  # Adres IP serwera
 # port = 8080  # Port serwera
