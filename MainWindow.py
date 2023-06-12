@@ -14,22 +14,25 @@ ALGORITHM_OPTIONS = ["ECB", "CBC"]
 
 class MainWindow:
     def __init__(self, encryption_key, decryption_key, client_socket, user_dir):
-        self.message_entry = None
-        self.selected_algorithm = None
-        self.file_label = None
-        self.encryption_key = encryption_key
-        self.decryption_key = decryption_key
-        self.socket = client_socket
-        self.user_dir = user_dir
-        self.chosen_file = None
-
+        # window settings
         self.window = Tk()
-
-        self.window.title("Main Window: " + self.user_dir[-1])
+        self.window.title("Main Window: " + user_dir[-1])
         self.window.geometry(WINDOW_SIZE)
         self.window.configure(bg=BACKGROUND_COLOR_DARKER)
         self.window.option_add("*Font", LABEL_FONT)
+
+        # entries and buttons
         self.radio_buttons = []
+        self.file_label = None
+        self.message_entry = None
+        self.selected_algorithm = None
+        self.chosen_file = None
+
+        # other variables
+        self.encryption_key = encryption_key[:32]
+        self.decryption_key = decryption_key[:32]
+        self.socket = client_socket
+        self.user_dir = user_dir
 
         self.create_main_frame()
 
@@ -104,10 +107,8 @@ class MainWindow:
             file_name = os.path.basename(path)
             self.file_label.configure(text=file_name)
 
-    def send(self, message_type):
+    def send(self, message_type):  # send file or message with additional parameters
         client_socket = self.socket
-        self.encryption_key = self.encryption_key[:32]
-        self.decryption_key = self.decryption_key[:32]
 
         if message_type == "Message":
             encrypted_message = encrypt_data(self.message_entry.get().encode(),

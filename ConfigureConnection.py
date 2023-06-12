@@ -7,15 +7,16 @@ from utils import *
 
 
 class ConfigureConnection:
-    def __init__(self, user_type, user_directory, public_key):
+    def __init__(self, user_type, public_key):
+        # window-related variables
         self.entry = None
-        self.address = None
         self.window = Tk()
         self.window.title("Configure connection: " + user_type)
         self.window.geometry(WINDOW_SIZE)
         self.window.configure(bg=BACKGROUND_COLOR_DARKER)
-        self.user_socket = None
-        self.user_directory = user_directory
+
+        # other variables
+        self.address = None
         self.public_key = public_key
         self.other_client_key = None
         self.socket = None
@@ -47,9 +48,11 @@ class ConfigureConnection:
         self.address = self.entry.get()
         self.window.destroy()
 
+        # Connect to the server
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((self.address, 8080))
 
+        # Keys exchange
         client_socket.send(public_key_to_bytes(self.public_key))
         response_key = client_socket.recv(2048)
 

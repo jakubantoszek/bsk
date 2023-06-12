@@ -73,7 +73,7 @@ def decrypt_data(encrypted_data, decryption_key, mode):
 
         return data
     elif mode == 'CBC':
-        iv = encrypted_data[:16]  # 16 bytes for AES-128
+        iv = encrypted_data[:16]
 
         cipher = Cipher(algorithms.AES(decryption_key), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()

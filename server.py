@@ -9,18 +9,16 @@ def start_server(host, port):
     print("The server is listening on {}:{}".format(host, port))
 
     client_sockets = []
-    while len(client_sockets) < 2:
+    while len(client_sockets) < 2:  # waiting for both users
         connection, address = server_socket.accept()
         client_sockets.append(connection)
         print("Connected with: ", address)
 
     while True:
         message = client_sockets[0].recv(2048)
-        print(message)
         client_sockets[1].send(message)
 
         message = client_sockets[1].recv(2048)
-        print(message)
         client_sockets[0].send(message)
 
     for client_socket in client_sockets:

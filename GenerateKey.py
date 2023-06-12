@@ -13,15 +13,18 @@ from utils import get_key_from_file
 
 class GenerateKey:
     def __init__(self, user_dir, local_key):
-        self.user_dir = user_dir
-        self.local_key = local_key
-        self.selected_algorithm = None
+        # window-related variables
         self.window = Tk()
         self.window.title("Generate key")
         self.window.geometry(WINDOW_SIZE)
         self.window.configure(bg=BACKGROUND_COLOR_DARKER)
-        self.public_key = None
+        self.selected_algorithm = None
         self.radio_buttons = []
+
+        # other variables
+        self.user_dir = user_dir
+        self.local_key = local_key
+        self.public_key = None
 
         self.generate_key_frame()
 
@@ -65,9 +68,9 @@ class GenerateKey:
 
     def generate_key(self):
         self.window.destroy()
-        try:
+        try:  # if user exist before get keys from file
             self.public_key = get_key_from_file(self.user_dir)
-        except FileNotFoundError:
+        except FileNotFoundError:  # for new user generate keys
             if self.selected_algorithm.get() == "RSA1024":
                 (public_key, private_key) = rsa.newkeys(1024)
             else:
@@ -89,7 +92,7 @@ class GenerateKey:
             with open(private_key_file, 'wb') as pr_file:
                 pr_file.write(self.encrypt_private_key(private_key))
 
-    def encrypt_private_key(self, key):
+    def encrypt_private_key(self, key):  # encrypt private key using local key
         iv = os.urandom(16)
 
         cipher = Cipher(algorithms.AES256(self.local_key[:32].encode()), modes.CBC(iv), default_backend())

@@ -10,7 +10,7 @@ path = "H:\\Studia\\Semestr 6\\bsk_users"
 
 class Login:
     def __init__(self):
-        self.password = None
+        # window-related variables
         self.repeat_password_entry = None
         self.repeat_password_label = None
         self.register_button = None
@@ -19,11 +19,14 @@ class Login:
         self.username_entry = None
         self.password_label = None
         self.username_label = None
-        self.user_directory = None
         self.message_label = None
+        self.window = None
+
+        # other variables
+        self.user_directory = None
+        self.password = None
 
         self.create_window('Login')
-        self.window.mainloop()
 
     def create_window(self, window_type):
         self.window = tk.Tk()
@@ -36,6 +39,8 @@ class Login:
         elif window_type == 'Register':
             self.window.title("Register")
             self.register_window()
+
+        self.window.mainloop()
 
     def login_window(self):
         login_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
@@ -76,7 +81,6 @@ class Login:
         self.message_label.pack(pady=10)
 
     def register_window(self):
-
         register_frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
         register_frame.pack(pady=20)
 
@@ -133,6 +137,7 @@ class Login:
                 with open(os.path.join(user_dir, "local_key.txt"), 'r') as file:
                     password = file.read()
                     password = password.replace('\n', '')
+
                     if hashlib.sha256(self.password_entry.get().encode()).hexdigest() == password:
                         self.show_message("Correct password")
                         self.window.destroy()
@@ -154,7 +159,7 @@ class Login:
                 password_hash = hashlib.sha256(self.password_entry.get().encode()).hexdigest()
                 repeated_password_hash = hashlib.sha256(self.repeat_password_entry.get().encode()).hexdigest()
 
-                if password_hash == repeated_password_hash:
+                if password_hash == repeated_password_hash:  # create directory and local key for new user
                     user_dir = os.path.join(path, self.username_entry.get())
                     os.mkdir(user_dir)
                     with open(os.path.join(user_dir, "local_key.txt"), 'w') as file:
