@@ -5,7 +5,6 @@ import tkinter as tk
 from constants import *
 
 path = "H:\\Studia\\Semestr 6\\bsk_users"
-# path = 'C:\\bsk'
 
 
 class Login:
@@ -151,7 +150,8 @@ class Login:
 
     def register(self, window_type):
         if window_type == 'Register':
-            if self.username_entry.get().strip() == '' or self.repeat_password_entry.get().strip() == '' or self.password_entry.get().strip() == '':
+            if self.username_entry.get().strip() == '' or self.repeat_password_entry.get().strip() == ''\
+                    or self.password_entry.get().strip() == '':
                 self.show_message("Fields can't be empty")
             elif os.path.exists(os.path.join(path, self.username_entry.get())):
                 self.show_message("User exists")
@@ -166,6 +166,9 @@ class Login:
                         file.write(password_hash)
                     self.window.destroy()
                     self.create_window('Login')
+
+                    self.user_directory = user_dir
+                    self.password = password_hash
                 else:
                     self.show_message("Passwords are not the same")
         elif window_type == 'Login':

@@ -46,7 +46,7 @@ class Server:
             print('Connected to:', addr)
             self.clients.append(client_socket)
 
-        self.exchange_keys()
+        self.exchange_keys()  # exchange public keys between both users
 
         for client_socket in self.clients:
             # start new thread to handle the client

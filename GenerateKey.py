@@ -8,16 +8,13 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from constants import *
-from utils import get_key_from_file
+from utils import get_key_from_file, bytes_to_public_key
 
 
 class GenerateKey:
     def __init__(self, user_dir, local_key):
         # window-related variables
-        self.window = Tk()
-        self.window.title("Generate key")
-        self.window.geometry(WINDOW_SIZE)
-        self.window.configure(bg=BACKGROUND_COLOR_DARKER)
+        self.window = None
         self.selected_algorithm = None
         self.radio_buttons = []
 
@@ -26,7 +23,19 @@ class GenerateKey:
         self.local_key = local_key
         self.public_key = None
 
-        self.generate_key_frame()
+        self.get_keys()
+
+    def get_keys(self):
+        try:  # if user existed before get keys from file
+            self.public_key = get_key_from_file(self.user_dir)
+        except FileNotFoundError:  # for new user generate keys
+            self.window = Tk()
+            self.window.title("Generate key")
+            self.window.geometry(WINDOW_SIZE)
+            self.window.configure(bg=BACKGROUND_COLOR_DARKER)
+
+            self.generate_key_frame()
+            self.window.mainloop()
 
     def generate_key_frame(self):
         frame = tk.Frame(self.window, bg=BACKGROUND_COLOR, padx=20, pady=20)
@@ -67,20 +76,18 @@ class GenerateKey:
                 button.configure(fg=TEXT_COLOR2)
 
     def generate_key(self):
+        if self.selected_algorithm.get() == "RSA1024":
+            (public_key, private_key) = rsa.newkeys(1024)
+        else:
+            (public_key, private_key) = rsa.newkeys(2048)
+
+        public_key = public_key.save_pkcs1('PEM')
+        private_key = private_key.save_pkcs1('PEM')
+
+        self.public_key = bytes_to_public_key(public_key)
+        self.save_keys(public_key, private_key)  # save keys to the file
+
         self.window.destroy()
-        try:  # if user exist before get keys from file
-            self.public_key = get_key_from_file(self.user_dir)
-        except FileNotFoundError:  # for new user generate keys
-            if self.selected_algorithm.get() == "RSA1024":
-                (public_key, private_key) = rsa.newkeys(1024)
-            else:
-                (public_key, private_key) = rsa.newkeys(2048)
-
-            public_key = public_key.save_pkcs1('PEM')
-            private_key = private_key.save_pkcs1('PEM')
-
-            self.public_key = public_key
-            self.save_keys(public_key, private_key)
 
     def save_keys(self, public_key, private_key):
         public_key_file = os.path.join(self.user_dir, "public_key.txt")

@@ -17,7 +17,7 @@ class MainWindow:
     def __init__(self, encryption_key, decryption_key, client_socket, user_dir):
         # window settings
         self.window = Tk()
-        self.window.title("Main Window: " + user_dir[-1])
+        self.window.title("Main Window: " + user_dir.split("\\")[-1])
         self.window.geometry(WINDOW_DOUBLE_SIZE)
         self.window.configure(bg=BACKGROUND_COLOR_DARKER)
         self.window.option_add("*Font", LABEL_FONT)
@@ -79,12 +79,12 @@ class MainWindow:
                                    fg=TEXT_COLOR1, wraplength=190)
         self.file_label.pack()
 
-        send_button = tk.Button(file_frame, text="Send", command=partial(self.send, "File"), font=BUTTON_FONT, bg=BUTTON_COLOR1,
+        send_button = tk.Button(file_frame, text="Send", command=partial(self.send, "File"), font=BUTTON_FONT,
+                                bg=BUTTON_COLOR1,
                                 fg=BUTTON_TEXT_COLOR, activeforeground=BUTTON_TEXT_COLOR1)
         send_button.pack(pady=5)
 
         file_frame.pack(padx=10, fill="x")
-
 
         options = ALGORITHM_OPTIONS
         self.selected_algorithm = tk.StringVar(left_frame)
@@ -94,7 +94,7 @@ class MainWindow:
         radio_frame.pack(anchor="center", pady=5)
 
         radio_label = tk.Label(radio_frame, text="Choose encryption mode:", font=LABEL_FONT, bg=BACKGROUND_COLOR,
-                                      fg=TEXT_COLOR1)
+                               fg=TEXT_COLOR1)
         radio_label.pack()
 
         for option in options:
@@ -105,16 +105,17 @@ class MainWindow:
             self.radio_buttons.append(algorithm_radio)
         self.update_radio_buttons()
 
-
         # Right Frame - Received Messages
         right_frame = tk.Frame(main_frame, bg=BACKGROUND_COLOR)
         right_frame.pack(side="right", padx=10, pady=10)
 
-        received_messages_label = tk.Label(right_frame, text="Received messages:", font=LABEL_FONT_BOLD, bg=BACKGROUND_COLOR,
+        received_messages_label = tk.Label(right_frame, text="Received messages:", font=LABEL_FONT_BOLD,
+                                           bg=BACKGROUND_COLOR,
                                            fg=TEXT_COLOR2, pady=5)
         received_messages_label.pack(pady=10)
 
-        self.received_messages_text = tk.Text(right_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR, fg=ENTRY_TEXT_COLOR,
+        self.received_messages_text = tk.Text(right_frame, font=LABEL_FONT, bg=ENTRY_BACKGROUND_COLOR,
+                                              fg=ENTRY_TEXT_COLOR,
                                               height=32, width=20)
         self.received_messages_text.pack()
 
@@ -180,17 +181,16 @@ class MainWindow:
 
             if received_data['Type'] == "Message":
                 received_message = "Message: " + received_content.decode()
-                print(received_message)
                 self.received_messages_text.insert(tk.END, received_message + "\n")
-
-                if self.message_entry.get().lower() == "exit":
-                    self.window.destroy()
-                    exit(0)
             else:
                 received_file = "File: " + received_data['Filename']
-                print(received_file)
                 self.received_messages_text.insert(tk.END, received_file + "\n")
-                new_file_path = os.path.join(self.user_dir, received_data['Filename'])
+
+                # create filename directory if it wasn't created yet
+                if not os.path.exists(os.path.join(self.user_dir, 'files')):
+                    os.mkdir(os.path.join(self.user_dir, 'files'))
+
+                new_file_path = os.path.join(self.user_dir, 'files', received_data['Filename'])
 
                 with open(new_file_path, 'wb') as received_file:
                     received_file.write(received_content)

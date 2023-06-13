@@ -1,3 +1,5 @@
+import time
+
 from MainWindow import MainWindow
 from GenerateKey import GenerateKey
 from ConfigureConnection import ConfigureConnection
@@ -9,10 +11,9 @@ if __name__ == '__main__':
     # Login and get or generate keys (if they don't exist)
     login = Login()
     generate_key = GenerateKey(login.user_directory, login.password)
-    generate_key.window.mainloop()
 
     # Connect with server
-    configure_connection = ConfigureConnection("client", generate_key.public_key)
+    configure_connection = ConfigureConnection(generate_key.public_key)
     configure_connection.window.mainloop()
 
     # Get session keys for two-way communication
